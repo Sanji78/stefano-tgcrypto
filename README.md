@@ -156,7 +156,7 @@ print(data == cbc_decrypted)  # True
 
 ## Testing
 
-1. Clone this repository: `git clone https://github.com/pyrogram/tgcrypto`.
+1. Clone this repository: `git clone https://github.com/Sanji78/tgcrypto`.
 2. Enter the directory: `cd tgcrypto`.
 3. Install `tox`: `pip3 install tox`
 4. Run tests: `tox`.
