@@ -22,13 +22,13 @@ with open("README.md", encoding="utf-8") as f:
     readme = f.read()
 
 setup(
-    name="stefano-TgCrypto",
-    version="1.2.8",
+    name="stefano-tgcrypto",
+    version="1.3.0",
     description="Fast and Portable Cryptography Extension Library for Pyrogram",
     long_description=readme,
     long_description_content_type="text/markdown",
-    url="https://github.com/Sanji78/tgcrypto",
-    download_url="https://github.com/Sanji78/tgcrypto/releases/latest",
+    url="https://github.com/Sanji78/stefano-tgcrypto",
+    download_url="https://github.com/Sanji78/stefano-tgcrypto/releases/latest",
     author="Sanji78",
     author_email="stefano.giugliano78@gmail.com",
     license="LGPLv3+",
@@ -58,8 +58,8 @@ setup(
     ],
     keywords="pyrogram telegram crypto cryptography encryption mtproto extension library aes",
     project_urls={
-        "Tracker": "https://github.com/Sanji78/tgcrypto/issues",
-        "Source": "https://github.com/Sanji78/tgcrypto",
+        "Tracker": "https://github.com/Sanji78/stefano-tgcrypto/issues",
+        "Source": "https://github.com/Sanji78/stefano-tgcrypto",
         "Documentation": "https://docs.pyrogram.org",
     },
     python_requires="~=3.7",
