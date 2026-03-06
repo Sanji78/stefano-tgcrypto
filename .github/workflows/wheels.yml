@@ -20,31 +20,19 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      - name: Debug: list /opt/python in musllinux image
-        run: |
-          docker run --rm quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest sh -lc "ls -1 /opt/python || true"
-
       - name: Build wheels (musllinux)
         uses: pypa/cibuildwheel@v2.21.3
         env:
-          CIBW_BUILD: "cp313-musllinux_${{ matrix.arch }} cp314-musllinux_${{ matrix.arch }}"
-          CIBW_ARCHS_LINUX: "${{ matrix.arch }}"
+          CIBW_BUILD: cp313-musllinux_${{ matrix.arch }} cp314-musllinux_${{ matrix.arch }}
+          CIBW_ARCHS_LINUX: ${{ matrix.arch }}
           CIBW_PRERELEASE_PYTHONS: "1"
           CIBW_TEST_SKIP: "*"
-
-          CIBW_MUSLLINUX_X86_64_IMAGE: "quay.io/pypa/musllinux_1_2_x86_64:latest"
-          CIBW_MUSLLINUX_AARCH64_IMAGE: "quay.io/pypa/musllinux_1_2_aarch64:latest"
-
-          CIBW_BEFORE_ALL_LINUX: >
-            apk add --no-cache
-            build-base
-            linux-headers
-            python3-dev
+          CIBW_MUSLLINUX_X86_64_IMAGE: quay.io/pypa/musllinux_1_2_x86_64:latest
+          CIBW_MUSLLINUX_AARCH64_IMAGE: quay.io/pypa/musllinux_1_2_aarch64:latest
+          CIBW_BEFORE_ALL_LINUX: apk add --no-cache build-base linux-headers python3-dev
 
       - name: Assert cp314 wheel exists
-        run: |
-          ls -la wheelhouse
-          python -c "import glob,sys; sys.exit(0 if glob.glob('wheelhouse/*cp314*.whl') else 1)"
+        run: python -c "import glob,sys; sys.exit(0 if glob.glob('wheelhouse/*cp314*.whl') else 1)"
 
       - uses: actions/upload-artifact@v4
         with:
