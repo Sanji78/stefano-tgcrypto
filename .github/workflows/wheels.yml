@@ -20,6 +20,9 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
+      - name: Show interpreters present in musllinux image
+        run: docker run --rm quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest sh -lc "ls -1 /opt/python"
+    
       - name: Build wheels (musllinux)
         uses: pypa/cibuildwheel@v2.21.3
         env:
