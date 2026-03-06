@@ -22,8 +22,7 @@ jobs:
 
       - name: Debug: list /opt/python in musllinux image
         run: |
-          docker run --rm quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest \
-            sh -lc 'ls -1 /opt/python || true'
+          docker run --rm quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest sh -lc "ls -1 /opt/python || true"
 
       - name: Build wheels (musllinux)
         uses: pypa/cibuildwheel@v2.21.3
@@ -33,11 +32,9 @@ jobs:
           CIBW_PRERELEASE_PYTHONS: "1"
           CIBW_TEST_SKIP: "*"
 
-          # override musllinux image
           CIBW_MUSLLINUX_X86_64_IMAGE: "quay.io/pypa/musllinux_1_2_x86_64:latest"
           CIBW_MUSLLINUX_AARCH64_IMAGE: "quay.io/pypa/musllinux_1_2_aarch64:latest"
 
-          # deps needed to compile tgcrypto in musllinux container
           CIBW_BEFORE_ALL_LINUX: >
             apk add --no-cache
             build-base
