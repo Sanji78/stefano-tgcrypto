@@ -25,7 +25,6 @@ jobs:
         env:
           CIBW_BUILD: "cp313-musllinux_* cp314-musllinux_* cp314t-musllinux_*"
           CIBW_ARCHS_LINUX: "${{ matrix.arch }}"
-          CIBW_PRERELEASE_PYTHONS: "1"
           CIBW_TEST_SKIP: "*"
           CIBW_BUILD_VERBOSITY: "3"
           CIBW_DEBUG_TRACEBACK: "1"
