@@ -24,25 +24,18 @@ jobs:
         uses: pypa/cibuildwheel@v2.23.0
         env:
           CIBW_PLATFORM: "linux"
+          CIBW_BUILD_PLATFORM: "musllinux"
           CIBW_ARCHS_LINUX: "${{ matrix.arch }}"
 
-          # Select the CPython 3.14 ABIs (build identifiers)
           CIBW_BUILD: "cp314-* cp314t-*"
-
-          # Force MUSLLINUX only (do NOT allow manylinux builds)
-          CIBW_SKIP: "*manylinux* *pypy*"
-
-          # Python 3.14 prerelease + freethreading (3.14t) are gated by enable
           CIBW_ENABLE: "cpython-prerelease cpython-freethreading"
 
           CIBW_TEST_SKIP: "*"
-          CIBW_BUILD_VERBOSITY: "1"
+          CIBW_BUILD_VERBOSITY: "3"
 
-          # musllinux containers (Alpine-based)
           CIBW_MUSLLINUX_X86_64_IMAGE: "quay.io/pypa/musllinux_1_2_x86_64:latest"
           CIBW_MUSLLINUX_AARCH64_IMAGE: "quay.io/pypa/musllinux_1_2_aarch64:latest"
 
-          # deps inside Alpine container
           CIBW_BEFORE_ALL_LINUX: apk add --no-cache build-base linux-headers python3-dev
           
       - name: Assert cp314 wheel exists
