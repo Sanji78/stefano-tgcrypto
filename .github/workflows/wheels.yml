@@ -21,10 +21,15 @@ jobs:
         uses: docker/setup-qemu-action@v3
 
       - name: Debug list /opt/python in musllinux image
-        run: docker run --rm --platform linux/${{ matrix.arch == 'aarch64' && 'arm64' || 'amd64' }} quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest sh -lc "ls -1 /opt/python"
+        run: |
+          docker run --rm --platform linux/${{ matrix.arch == 'aarch64' && 'arm64' || 'amd64' }} \
+            quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest \
+            sh -lc "ls -1 /opt/python"
 
       - name: Debug show musllinux image digest
-        run: docker pull --platform linux/${{ matrix.arch == 'aarch64' && 'arm64' || 'amd64' }} quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest docker inspect --format='{{index .RepoDigests 0}}' quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest
+        run: |
+          docker pull --platform linux/${{ matrix.arch == 'aarch64' && 'arm64' || 'amd64' }} quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest
+          docker inspect --format='{{index .RepoDigests 0}}' quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest
           
       - name: Build wheels (musllinux)
         uses: pypa/cibuildwheel@v2.23.0
