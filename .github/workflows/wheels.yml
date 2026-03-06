@@ -20,25 +20,16 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      - name: Debug list /opt/python in musllinux image
-        run: |
-          docker run --rm --platform linux/${{ matrix.arch == 'aarch64' && 'arm64' || 'amd64' }} \
-            quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest \
-            sh -lc "ls -1 /opt/python"
-
-      - name: Debug show musllinux image digest
-        run: |
-          docker pull --platform linux/${{ matrix.arch == 'aarch64' && 'arm64' || 'amd64' }} quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest
-          docker inspect --format='{{index .RepoDigests 0}}' quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest
-          
       - name: Build wheels (musllinux)
         uses: pypa/cibuildwheel@v2.23.0
         env:
-          CIBW_BUILD: "cp313-musllinux_* cp314-musllinux_*"
+          CIBW_BUILD: "cp313-musllinux_* cp314-musllinux_* cp314t-musllinux_*"
           CIBW_ARCHS_LINUX: "${{ matrix.arch }}"
           CIBW_PRERELEASE_PYTHONS: "1"
           CIBW_TEST_SKIP: "*"
           CIBW_BUILD_VERBOSITY: "3"
+          CIBW_DEBUG_TRACEBACK: "1"
+          CIBW_ENABLE: "cpython-prerelease cpython-freethreading"
 
           CIBW_MUSLLINUX_X86_64_IMAGE: "quay.io/pypa/musllinux_1_2_x86_64:latest"
           CIBW_MUSLLINUX_AARCH64_IMAGE: "quay.io/pypa/musllinux_1_2_aarch64:latest"
