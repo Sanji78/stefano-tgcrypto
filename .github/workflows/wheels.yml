@@ -23,7 +23,7 @@ jobs:
       - name: Build wheels (musllinux)
         uses: pypa/cibuildwheel@v2.23.0
         env:
-          CIBW_BUILD: "cp313-musllinux_* cp314-musllinux_* cp314t-musllinux_*"
+          CIBW_BUILD: "cp314-musllinux_*"
           CIBW_ARCHS_LINUX: "${{ matrix.arch }}"
           CIBW_TEST_SKIP: "*"
           CIBW_BUILD_VERBOSITY: "3"
