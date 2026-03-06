@@ -22,8 +22,9 @@ jobs:
 
       - name: Debug: list /opt/python in musllinux image
         run: |
-            docker run --rm quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest sh -lc 'ls -1 /opt/python || true'
-            
+          docker run --rm quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest \
+            sh -lc 'ls -1 /opt/python || true'
+
       - name: Build wheels (musllinux)
         uses: pypa/cibuildwheel@v2.21.3
         env:
@@ -31,8 +32,8 @@ jobs:
           CIBW_ARCHS_LINUX: "${{ matrix.arch }}"
           CIBW_PRERELEASE_PYTHONS: "1"
           CIBW_TEST_SKIP: "*"
-          
-          # override musllinux image to a newer tag that includes cp314
+
+          # override musllinux image
           CIBW_MUSLLINUX_X86_64_IMAGE: "quay.io/pypa/musllinux_1_2_x86_64:latest"
           CIBW_MUSLLINUX_AARCH64_IMAGE: "quay.io/pypa/musllinux_1_2_aarch64:latest"
 
@@ -42,17 +43,12 @@ jobs:
             build-base
             linux-headers
             python3-dev
-        # if tgcrypto needs openssl headers too, add: openssl-dev
 
       - name: Assert cp314 wheel exists
         run: |
-            ls -la wheelhouse
-            python - <<'PY'
-            import glob, sys
-            if not glob.glob("wheelhouse/*cp314*.whl"):
-                raise SystemExit("cp314 wheel not produced (likely interpreter missing in musllinux image).")
-            PY
-    
+          ls -la wheelhouse
+          python -c "import glob,sys; sys.exit(0 if glob.glob('wheelhouse/*cp314*.whl') else 1)"
+
       - uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.arch }}
