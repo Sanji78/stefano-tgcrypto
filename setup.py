@@ -23,7 +23,7 @@ with open("README.md", encoding="utf-8") as f:
 
 setup(
     name="stefano-tgcrypto",
-    version="1.4.0",
+    version="1.4.1",
     description="Fast and Portable Cryptography Extension Library for Pyrogram",
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -65,7 +65,7 @@ setup(
         "Source": "https://github.com/Sanji78/stefano-tgcrypto",
         "Documentation": "https://docs.pyrogram.org",
     },
-    python_requires="~=3.7",
+    python_requires=">=3.8",
     packages=find_packages(),
     test_suite="tests",
     zip_safe=False,
