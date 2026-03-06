@@ -20,26 +20,30 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      - name: Build wheels (musllinux only, Python 3.14)
-        uses: pypa/cibuildwheel@v2.23.0
-        env:
-          CIBW_PLATFORM: "linux"
-          CIBW_BUILD_PLATFORM: "musllinux"
-          CIBW_ARCHS_LINUX: "${{ matrix.arch }}"
+      - name: Build cp314 musllinux wheel in container
+        run: |
+          set -euxo pipefail
+          if [ "${{ matrix.arch }}" = "aarch64" ]; then
+            plat=linux/arm64
+            image=quay.io/pypa/musllinux_1_2_aarch64:latest
+          else
+            plat=linux/amd64
+            image=quay.io/pypa/musllinux_1_2_x86_64:latest
+          fi
 
-          CIBW_BUILD: "cp314-* cp314t-*"
-          CIBW_ENABLE: "cpython-prerelease cpython-freethreading"
+          docker pull --platform "$plat" "$image"
 
-          CIBW_TEST_SKIP: "*"
-          CIBW_BUILD_VERBOSITY: "3"
+          docker run --rm --platform "$plat" \
+            -v "${GITHUB_WORKSPACE}:/project" \
+            -w /project \
+            "$image" sh -lc '
+              set -eux
+              apk add --no-cache build-base linux-headers python3-dev
+              /opt/python/cp314-cp314/bin/python -m pip install -U pip build
+              /opt/python/cp314-cp314/bin/python -m pip wheel . -w /project/wheelhouse
+            '
 
-          CIBW_MUSLLINUX_X86_64_IMAGE: "quay.io/pypa/musllinux_1_2_x86_64:latest"
-          CIBW_MUSLLINUX_AARCH64_IMAGE: "quay.io/pypa/musllinux_1_2_aarch64:latest"
-
-          CIBW_BEFORE_ALL_LINUX: apk add --no-cache build-base linux-headers python3-dev
-          
-      - name: Assert cp314 wheel exists
-        run: python -c "import glob,sys; sys.exit(0 if glob.glob('wheelhouse/*cp314*.whl') else 1)"
+          ls -la wheelhouse
 
       - uses: actions/upload-artifact@v4
         with:
