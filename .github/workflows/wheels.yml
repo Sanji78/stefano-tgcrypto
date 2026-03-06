@@ -20,6 +20,10 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
+      - name: Debug: list /opt/python in musllinux image
+        run: |
+            docker run --rm quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest sh -lc 'ls -1 /opt/python || true'
+            
       - name: Build wheels (musllinux)
         uses: pypa/cibuildwheel@v2.21.3
         env:
@@ -40,6 +44,15 @@ jobs:
             python3-dev
         # if tgcrypto needs openssl headers too, add: openssl-dev
 
+      - name: Assert cp314 wheel exists
+        run: |
+            ls -la wheelhouse
+            python - <<'PY'
+            import glob, sys
+            if not glob.glob("wheelhouse/*cp314*.whl"):
+                raise SystemExit("cp314 wheel not produced (likely interpreter missing in musllinux image).")
+            PY
+    
       - uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.arch }}
