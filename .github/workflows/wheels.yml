@@ -25,6 +25,7 @@ jobs:
         env:
           CIBW_BUILD: "cp313-musllinux_${{ matrix.arch }} cp314-musllinux_${{ matrix.arch }}"
           CIBW_ARCHS_LINUX: "${{ matrix.arch }}"
+          CIBW_PRERELEASE_PYTHONS: 1
           CIBW_TEST_SKIP: "*"
 
           # deps needed to compile tgcrypto in musllinux container
