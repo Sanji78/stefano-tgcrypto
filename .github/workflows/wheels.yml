@@ -20,7 +20,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      - name: Build cp314 musllinux wheel in container
+      - name: Build cp313+cp314 musllinux wheels (and repair tags)
         run: |
           set -euxo pipefail
           if [ "${{ matrix.arch }}" = "aarch64" ]; then
@@ -33,16 +33,34 @@ jobs:
 
           docker pull --platform "$plat" "$image"
 
+          # clean output dir
+          rm -rf wheelhouse
+          mkdir -p wheelhouse
+
           docker run --rm --platform "$plat" \
             -v "${GITHUB_WORKSPACE}:/project" \
             -w /project \
             "$image" sh -lc '
               set -eux
               apk add --no-cache build-base linux-headers python3-dev
-              /opt/python/cp314-cp314/bin/python -m pip install -U pip build
-              /opt/python/cp314-cp314/bin/python -m pip wheel . -w /project/wheelhouse
+
+              # build raw wheels
+              rm -rf /tmp/built /tmp/repaired
+              mkdir -p /tmp/built /tmp/repaired
+
+              for py in cp313-cp313 cp314-cp314; do
+                /opt/python/$py/bin/python -m pip install -U pip setuptools wheel
+                /opt/python/$py/bin/python -m pip wheel . -w /tmp/built
+              done
+
+              # repair to musllinux tags (PyPI accepts musllinux_1_2_*)
+              auditwheel repair -w /tmp/repaired /tmp/built/*.whl
+
+              # move repaired wheels back to host-mounted wheelhouse
+              mv /tmp/repaired/*.whl /project/wheelhouse/
             '
 
+          echo "Produced wheels:"
           ls -la wheelhouse
 
       - uses: actions/upload-artifact@v4
