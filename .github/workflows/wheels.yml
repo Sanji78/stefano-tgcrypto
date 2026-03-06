@@ -19,21 +19,21 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-
-      - name: Show interpreters present in musllinux image
-        run: docker run --rm quay.io/pypa/musllinux_1_2_${{ matrix.arch }}:latest sh -lc "ls -1 /opt/python"
     
       - name: Build wheels (musllinux)
         uses: pypa/cibuildwheel@v2.23.0
         env:
-          CIBW_BUILD: "cp313-* cp314-*"
-          CIBW_ARCHS_LINUX: ${{ matrix.arch }}
+          CIBW_BUILD: "cp313-musllinux_* cp314-musllinux_*"
+          CIBW_ARCHS_LINUX: "${{ matrix.arch }}"
           CIBW_PRERELEASE_PYTHONS: "1"
           CIBW_TEST_SKIP: "*"
+          CIBW_BUILD_VERBOSITY: "1"
+
           CIBW_MUSLLINUX_X86_64_IMAGE: "quay.io/pypa/musllinux_1_2_x86_64:latest"
           CIBW_MUSLLINUX_AARCH64_IMAGE: "quay.io/pypa/musllinux_1_2_aarch64:latest"
-          CIBW_BEFORE_ALL_LINUX: apk add --no-cache build-base linux-headers python3-dev
 
+          CIBW_BEFORE_ALL_LINUX: apk add --no-cache build-base linux-headers python3-dev
+          
       - name: Assert cp314 wheel exists
         run: python -c "import glob,sys; sys.exit(0 if glob.glob('wheelhouse/*cp314*.whl') else 1)"
 
